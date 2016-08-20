@@ -23,6 +23,7 @@ import snownlp
 from numpy.random import choice
 import flask
 
+DBNAME = "your database"
 
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
@@ -59,7 +60,7 @@ def webhook():
         flask.abort(403)
 
 
-engine = create_engine('sqlite:///feza.db', echo=True)
+engine = create_engine('sqlite:///' + DBNAME, echo=True)
 DBSession = sessionmaker(bind=engine)
 
 Base = declarative_base()
@@ -107,7 +108,7 @@ def choose(message):
         probablity.append(1 - s.sentiments)
         text = choice(elements, p=probablity)
         if text == '吼啊':
-            moha = ['吼啊', '我是支持的。我就明确的告诉你。', '你一定要来问我,支持不支持。我们怎么能不支持?', '我就什么话也不说.这是最吼的!']
+            moha = ['吼啊', '我是支持的。我就明确的告诉你。', '你一定要来问我,支持不支持。我们怎么能不支持?', '我就什么话也不说.这是坠吼的!']
             mohaw = [0.25, 0.25, 0.25, 0.25]
             text = choice(moha, p=mohaw)
             bot.send_message(message.chat.id, text)
@@ -165,7 +166,6 @@ def get_entropy(message):
 def simple_reply(message):
     early = message.reply_to_message
     me = bot.get_me()
-
     if early.from_user.id == me.id:
         sspeak(message)
     savemsg(message)
@@ -296,12 +296,6 @@ def top(message):
         except:
             bot.send_message(message.chat.id, '说不出话.')
     session.close()
-
-@bot.message_handler(commands=['sing'])
-def sing(message):
-    bot.send_chat_action(message.chat.id, 'record_audio')
-    with open('njzl.mp3', 'rb') as music:
-        bot.send_voice(message.chat.id, music.read())
 
 
 @bot.message_handler(func=lambda message: True)
