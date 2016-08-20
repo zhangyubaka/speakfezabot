@@ -57,3 +57,10 @@ def webhook():
         return ''
     else:
         flask.abort(403)
+
+
+bot.remove_webhook()
+
+
+bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
+                certificate=open(WEBHOOK_SSL_CERT, 'r'))
